@@ -1,0 +1,5 @@
+# config.toml
+
+[log]
+developerMode = true
+outputToConsole = true
