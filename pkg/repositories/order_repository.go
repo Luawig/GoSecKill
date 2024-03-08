@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type IOderRepository interface {
+type IOrderRepository interface {
 	GetOrderList() (orders []models.Order, err error)
 
 	GetOrderByID(id int) (order models.Order, err error)
@@ -22,7 +22,7 @@ type OrderRepository struct {
 	db *gorm.DB
 }
 
-func NewOrderRepository(db *gorm.DB) IOderRepository {
+func NewOrderRepository(db *gorm.DB) IOrderRepository {
 	return &OrderRepository{db: db}
 }
 

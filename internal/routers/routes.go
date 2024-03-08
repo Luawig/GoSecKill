@@ -19,4 +19,12 @@ func InitRoutes(app *iris.Application, db *gorm.DB, ctx context.Context) {
 	product.Register(ctx, productService)
 	product.Handle(new(controllers.ProductController))
 	product.Handle(controllers.NewProductController(productService))
+
+	orderRepository := repositories.NewOrderRepository(db)
+	orderService := services.NewOrderService(orderRepository)
+	orderParty := app.Party("/order")
+	order := mvc.New(orderParty)
+	order.Register(ctx, orderService)
+	order.Handle(new(controllers.OrderController))
+	order.Handle(controllers.NewOrderController(orderService))
 }

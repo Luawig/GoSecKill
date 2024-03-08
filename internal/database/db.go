@@ -27,7 +27,7 @@ func InitDB() *gorm.DB {
 	}
 
 	// Auto migrate the database
-	_ = db.AutoMigrate(&models.Product{})
+	_ = db.AutoMigrate(&models.Product{}, &models.Order{})
 
 	sqlDB, err := db.DB()
 	if err != nil {
@@ -58,7 +58,7 @@ func InitTestDB() *gorm.DB {
 	}
 
 	// Auto migrate the database
-	_ = db.AutoMigrate(&models.Product{})
+	_ = db.AutoMigrate(&models.Product{}, &models.Order{})
 
 	sqlDB, err := db.DB()
 	if err != nil {
