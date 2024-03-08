@@ -1,0 +1,20 @@
+# config.example.toml
+
+[log]
+developerMode = true
+outputToConsole = true
+
+[server]
+port = ":8080"
+
+[database]
+username = "username"
+password = "password"
+host = "localhost"
+port = "3306"
+database = "database"
+
+[redis]
+
+[rabbitmq]
+url = "amqp://guest:guest@localhost:5672/"

@@ -12,11 +12,36 @@ type AppConfig struct {
 
 	// LogConfig holds the log configuration
 	LogConfig LogConfig `mapstructure:"log"`
+
+	// Server holds the server configuration
+	Server Server `mapstructure:"server"`
+
+	// Database holds the database configuration
+	Database Database `mapstructure:"database"`
+
+	// RabbitMQ holds the RabbitMQ configuration
+	RabbitMQ RabbitMQ `mapstructure:"rabbitmq"`
 }
 
 type LogConfig struct {
 	DeveloperMode   bool `mapstructure:"developerMode"`
 	OutputToConsole bool `mapstructure:"outputToConsole"`
+}
+
+type Server struct {
+	Port string `mapstructure:"port"`
+}
+
+type Database struct {
+	Host     string `mapstructure:"host"`
+	Port     string `mapstructure:"port"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+	Database string `mapstructure:"database"`
+}
+
+type RabbitMQ struct {
+	url string `mapstructure:"url"`
 }
 
 // LoadConfig loads application configuration from file and environment variables.
