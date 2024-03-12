@@ -3,6 +3,7 @@ package controllers
 import (
 	"GoSecKill/internal/services"
 	"GoSecKill/pkg/models"
+	"GoSecKill/pkg/util"
 	"net/http"
 	"strconv"
 
@@ -100,6 +101,13 @@ func (c *UserController) PostLogin(ctx iris.Context) {
 	ctx.SetCookie(&http.Cookie{
 		Name:  "uid",
 		Value: strconv.FormatInt(int64(users[0].ID), 10),
+		Path:  "/",
+	})
+	uidByte := []byte(strconv.FormatUint(uint64(users[0].ID), 10))
+	uidStr, _ := util.Encrypt(uidByte)
+	ctx.SetCookie(&http.Cookie{
+		Name:  "sign",
+		Value: string(uidStr),
 		Path:  "/",
 	})
 	c.sessions.Start(ctx).Set("userID", strconv.FormatInt(int64(users[0].ID), 10))
