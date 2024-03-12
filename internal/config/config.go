@@ -29,7 +29,8 @@ type LogConfig struct {
 }
 
 type Server struct {
-	Port string `mapstructure:"port"`
+	AdminPort  string `mapstructure:"adminPort"`
+	ServerPort string `mapstructure:"ServerPort"`
 }
 
 type Database struct {

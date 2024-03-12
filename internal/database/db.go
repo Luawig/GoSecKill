@@ -27,38 +27,7 @@ func InitDB() *gorm.DB {
 	}
 
 	// Auto migrate the database
-	_ = db.AutoMigrate(&models.Product{}, &models.Order{})
-
-	sqlDB, err := db.DB()
-	if err != nil {
-		zap.L().Fatal("failed to get database connection pool", zap.Error(err))
-	}
-
-	// Set the database connection pool settings
-	sqlDB.SetMaxIdleConns(10)
-	sqlDB.SetMaxOpenConns(100)
-	sqlDB.SetConnMaxLifetime(10 * time.Second)
-
-	return db
-}
-
-// InitTestDB initializes the database connection
-func InitTestDB() *gorm.DB {
-	// Connect to the database
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		viper.GetString("database.username"),
-		viper.GetString("database.password"),
-		viper.GetString("database.host"),
-		viper.GetString("database.port"),
-		viper.GetString("database.database")+`_test`,
-	)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		zap.L().Fatal("failed to connect database", zap.Error(err))
-	}
-
-	// Auto migrate the database
-	_ = db.AutoMigrate(&models.Product{}, &models.Order{})
+	_ = db.AutoMigrate(&models.Product{}, &models.Order{}, &models.User{})
 
 	sqlDB, err := db.DB()
 	if err != nil {

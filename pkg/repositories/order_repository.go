@@ -11,7 +11,7 @@ type IOrderRepository interface {
 
 	GetOrderByID(id int) (order models.Order, err error)
 
-	InsertOrder(order models.Order) (err error)
+	InsertOrder(order models.Order) (*models.Order, error)
 
 	UpdateOrder(order models.Order) (err error)
 
@@ -44,12 +44,12 @@ func (o OrderRepository) GetOrderByID(id int) (order models.Order, err error) {
 	return orderItem, nil
 }
 
-func (o OrderRepository) InsertOrder(order models.Order) (err error) {
-	err = o.db.Create(&order).Error
+func (o OrderRepository) InsertOrder(order models.Order) (*models.Order, error) {
+	err := o.db.Create(&order).Error
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	return &order, nil
 }
 
 func (o OrderRepository) UpdateOrder(order models.Order) (err error) {

@@ -10,7 +10,7 @@ type IOrderService interface {
 
 	GetOrderByID(id int) (order models.Order, err error)
 
-	InsertOrder(order models.Order) (err error)
+	InsertOrder(order models.Order) (*models.Order, error)
 
 	UpdateOrder(order models.Order) (err error)
 
@@ -33,7 +33,7 @@ func (s OrderService) GetOrderByID(id int) (order models.Order, err error) {
 	return s.orderRepository.GetOrderByID(id)
 }
 
-func (s OrderService) InsertOrder(order models.Order) (err error) {
+func (s OrderService) InsertOrder(order models.Order) (*models.Order, error) {
 	return s.orderRepository.InsertOrder(order)
 }
 

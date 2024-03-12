@@ -30,11 +30,11 @@ func main() {
 	app.Logger().SetLevel("debug")
 
 	// Register the view engine
-	template := iris.HTML("./web/views", ".html").Layout("shared/layout.html").Reload(true)
+	template := iris.HTML("./web/admin/views", ".html").Layout("shared/layout.html").Reload(true)
 	app.RegisterView(template)
 
 	// Register the routes
-	app.HandleDir("/assets", "./web/assets")
+	app.HandleDir("/assets", "./web/admin/assets")
 	app.OnAnyErrorCode(func(ctx iris.Context) {
 		ctx.ViewData("message", ctx.Values().GetStringDefault("message", "There was something wrong with the request!"))
 		ctx.ViewData("status", ctx.GetStatusCode())
@@ -46,19 +46,11 @@ func main() {
 	defer cancel()
 
 	// Register the routes
-	routers.InitRoutes(app, db, ctx)
-
-	// Register the product routes
-	//productRepository := repository.NewProductRepository(db)
-	//productService := services.NewProductService(productRepository)
-	//productParty := app.Party("/product")
-	//product := mvc.New(productParty)
-	//product.Register(ctx, productService)
-	//product.Handle(new(controllers.ProductController))
+	routers.InitAdminRoutes(app, db, ctx)
 
 	// Start the web application
 	err := app.Run(
-		iris.Addr(viper.GetString("server.port")),
+		iris.Addr(viper.GetString("server.adminPort")),
 		iris.WithCharset("UTF-8"),
 		iris.WithOptimizations,
 		iris.WithoutServerError(iris.ErrServerClosed),
