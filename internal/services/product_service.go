@@ -15,6 +15,8 @@ type IProductService interface {
 	UpdateProduct(product models.Product) (err error)
 
 	DeleteProduct(id int) (err error)
+
+	SubNumberOne(id int) (err error)
 }
 
 type ProductService struct {
@@ -43,4 +45,8 @@ func (p ProductService) UpdateProduct(product models.Product) (err error) {
 
 func (p ProductService) DeleteProduct(id int) (err error) {
 	return p.productRepository.DeleteProduct(id)
+}
+
+func (p ProductService) SubNumberOne(id int) (err error) {
+	return p.productRepository.SubNumberOne(id)
 }

@@ -3,6 +3,8 @@ package controllers
 import (
 	"GoSecKill/internal/services"
 	"GoSecKill/pkg/models"
+	"GoSecKill/pkg/mq"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -18,6 +20,7 @@ type ProductController struct {
 	productService services.IProductService
 	orderService   services.IOrderService
 	sessions       *sessions.Sessions
+	rabbitMQ       *mq.RabbitMQ
 }
 
 func NewProductController(productService services.IProductService, orderService services.IOrderService, sessions *sessions.Sessions) *ProductController {
@@ -88,55 +91,25 @@ func (p *ProductController) GetDetail(ctx iris.Context) mvc.View {
 	}
 }
 
-func (p *ProductController) GetOrder(ctx iris.Context) mvc.View {
+func (p *ProductController) GetOrder(ctx iris.Context) []byte {
 	productString := ctx.URLParam("productID")
 	userString := ctx.GetCookie("uid")
 	productID, err := strconv.Atoi(productString)
 	if err != nil {
 		zap.L().Error("Failed to convert productID", zap.Error(err))
 	}
-	product, err := p.productService.GetProductByID(productID)
+	userID, err := strconv.Atoi(userString)
 	if err != nil {
-		zap.L().Error("Failed to get product", zap.Error(err))
-	}
-	var orderID uint
-	showMessage := "Failed to buy product, please try again later"
-
-	if product.Stock > 0 {
-		product.Stock -= 1
-		err := p.productService.UpdateProduct(product)
-		if err != nil {
-			zap.L().Error("Failed to update product", zap.Error(err))
-		}
-		//创建订单
-		userID, err := strconv.Atoi(userString)
-		if err != nil {
-			zap.L().Error("Failed to convert userID", zap.Error(err))
-		}
-
-		order := &models.Order{
-			UserId:     uint(userID),
-			ProductId:  uint(productID),
-			ProductNum: 1,
-			Status:     models.OrderStatusSuccess,
-		}
-
-		order, err = p.orderService.InsertOrder(*order)
-		orderID = order.ID
-		if err != nil {
-			zap.L().Error("Failed to insert order", zap.Error(err))
-		} else {
-			showMessage = "Successfully buy product"
-		}
+		zap.L().Error("Failed to convert userID", zap.Error(err))
 	}
 
-	return mvc.View{
-		Layout: "shared/productLayout.html",
-		Name:   "product/result.html",
-		Data: iris.Map{
-			"orderID":     orderID,
-			"showMessage": showMessage,
-		},
+	message := models.NewMessage(int64(productID), int64(userID))
+	byteMessage, err := json.Marshal(message)
+	if err != nil {
+		zap.L().Error("Failed to marshal message", zap.Error(err))
 	}
 
+	p.rabbitMQ.PublishSimple(string(byteMessage))
+
+	return []byte("true")
 }

@@ -5,6 +5,7 @@ import (
 	"GoSecKill/internal/database"
 	"GoSecKill/internal/routers"
 	"GoSecKill/pkg/log"
+	"GoSecKill/pkg/mq"
 	"context"
 
 	"github.com/kataras/iris/v12"
@@ -44,6 +45,9 @@ func main() {
 		_ = ctx.View("shared/error.html")
 	})
 
+	// Initialize the message queue
+	rabbitmq := mq.NewRabbitMQSimple("go_seckill")
+
 	session := sessions.New(sessions.Config{
 		Cookie:  "sessioncookie",
 		Expires: 24 * 60 * 60,
@@ -52,7 +56,7 @@ func main() {
 	defer cancel()
 
 	// Register the routes
-	routers.InitServerRoutes(app, db, ctx, session)
+	routers.InitServerRoutes(app, db, ctx, session, rabbitmq)
 
 	// Start the web application
 	err := app.Run(

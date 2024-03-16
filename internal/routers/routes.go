@@ -3,6 +3,7 @@ package routers
 import (
 	"GoSecKill/internal/middleware"
 	"GoSecKill/internal/services"
+	"GoSecKill/pkg/mq"
 	"GoSecKill/pkg/repositories"
 	controllers2 "GoSecKill/web/admin/controllers"
 	"GoSecKill/web/server/controllers"
@@ -32,7 +33,7 @@ func InitAdminRoutes(app *iris.Application, db *gorm.DB, ctx context.Context) {
 	order.Handle(controllers2.NewOrderController(orderService))
 }
 
-func InitServerRoutes(app *iris.Application, db *gorm.DB, ctx context.Context, sessions *sessions.Sessions) {
+func InitServerRoutes(app *iris.Application, db *gorm.DB, ctx context.Context, sessions *sessions.Sessions, rabbitmq *mq.RabbitMQ) {
 	userRepository := repositories.NewUserRepository(db)
 	userService := services.NewUserService(userRepository)
 	userParty := app.Party("/user")
@@ -48,6 +49,6 @@ func InitServerRoutes(app *iris.Application, db *gorm.DB, ctx context.Context, s
 	proProduct := app.Party("/product")
 	pro := mvc.New(proProduct)
 	proProduct.Use(middleware.AuthConProduct)
-	pro.Register(productService, orderService)
+	pro.Register(productService, orderService, rabbitmq)
 	pro.Handle(controllers.NewProductController(productService, orderService, sessions))
 }

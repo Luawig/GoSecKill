@@ -11,6 +11,9 @@ import (
 	"gorm.io/gorm"
 )
 
+var db *gorm.DB
+var err error
+
 // InitDB initializes the database connection
 func InitDB() *gorm.DB {
 	// Connect to the database
@@ -21,7 +24,7 @@ func InitDB() *gorm.DB {
 		viper.GetString("database.port"),
 		viper.GetString("database.database"),
 	)
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		zap.L().Fatal("failed to connect database", zap.Error(err))
 	}
@@ -39,5 +42,9 @@ func InitDB() *gorm.DB {
 	sqlDB.SetMaxOpenConns(100)
 	sqlDB.SetConnMaxLifetime(10 * time.Second)
 
+	return db
+}
+
+func GetDB() *gorm.DB {
 	return db
 }

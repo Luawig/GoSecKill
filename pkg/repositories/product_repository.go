@@ -16,6 +16,8 @@ type IProductRepository interface {
 	UpdateProduct(product models.Product) (err error)
 
 	DeleteProduct(id int) (err error)
+
+	SubNumberOne(id int) (err error)
 }
 
 type ProductRepository struct {
@@ -62,6 +64,14 @@ func (p ProductRepository) UpdateProduct(product models.Product) (err error) {
 
 func (p ProductRepository) DeleteProduct(id int) (err error) {
 	err = p.db.Delete(&models.Product{}, id).Error
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p ProductRepository) SubNumberOne(id int) (err error) {
+	err = p.db.Model(&models.Product{}).Where("id = ? and number > 0", id).Update("number", gorm.Expr("number - ?", 1)).Error
 	if err != nil {
 		return err
 	}

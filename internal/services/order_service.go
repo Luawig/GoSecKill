@@ -15,6 +15,8 @@ type IOrderService interface {
 	UpdateOrder(order models.Order) (err error)
 
 	DeleteOrder(id int) (err error)
+
+	InsertOrderByMessage(message *models.Message) (uint, error)
 }
 
 type OrderService struct {
@@ -43,4 +45,15 @@ func (s OrderService) UpdateOrder(order models.Order) (err error) {
 
 func (s OrderService) DeleteOrder(id int) (err error) {
 	return s.orderRepository.DeleteOrder(id)
+}
+
+func (s OrderService) InsertOrderByMessage(message *models.Message) (orderId uint, err error) {
+	order := &models.Order{
+		UserId:     uint(message.UserID),
+		ProductId:  uint(message.ProductID),
+		ProductNum: 1,
+		Status:     models.OrderStatusSuccess,
+	}
+	order, err = s.InsertOrder(*order)
+	return order.ID, err
 }
